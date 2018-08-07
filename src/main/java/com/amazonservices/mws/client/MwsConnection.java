@@ -37,7 +37,7 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.params.BasicHttpParams;
@@ -121,7 +121,7 @@ public class MwsConnection implements Cloneable, Closeable {
     private String awsSecretKeyId;
 
     /** Connection manager to use for httpClient. */
-    private ClientConnectionManager connectionManager;
+    private HttpClientConnectionManager connectionManager;
 
     /** The connection timeout in milliseconds. */
     private int connectionTimeout = 50000;
