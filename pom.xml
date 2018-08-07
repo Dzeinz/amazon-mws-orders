@@ -72,22 +72,22 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore-osgi</artifactId>
-      <version>${org-apache-httpcomponents-version}</version>
+      <version>4.2.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
-      <version>${org-apache-httpcomponents-version}</version>
+      <version>4.5.5</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>${org-apache-httpcomponents-version}</version>
+      <version>4.4.9</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpmime</artifactId>
-      <version>${org-apache-httpcomponents-version}</version>
+      <version>4.5.5</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.httpcomponents</groupId>
@@ -98,7 +98,7 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>${org-apache-httpcomponents-version}</version>
+      <version>4.5.5</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.httpcomponents</groupId>
