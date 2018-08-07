@@ -31,17 +31,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
@@ -249,44 +250,21 @@ public class MwsConnection implements Cloneable, Closeable {
         HttpConnectionParams.setStaleCheckingEnabled(httpParams, true);
         HttpConnectionParams.setTcpNoDelay(httpParams, true);
 
-        connectionManager = getConnectionManager();
-        httpClient = new DefaultHttpClient(connectionManager, httpParams);
+
+        httpClient = HttpClientBuilder.create()
+                .setUserAgent(userAgent)
+                .build();
         httpContext = new BasicHttpContext();
-        if (proxyHost != null && proxyPort != 0) {
-            String scheme = MwsUtl.usesHttps(endpoint) ? "https" : "http";
-            HttpHost hostConfiguration = new HttpHost(proxyHost, proxyPort, scheme);
-            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, hostConfiguration);
 
             if (proxyUsername != null && proxyPassword != null) {
                 Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
                 CredentialsProvider cprovider = new BasicCredentialsProvider();
                 cprovider.setCredentials(new AuthScope(proxyHost, proxyPort), credentials);
-                httpContext.setAttribute(ClientContext.CREDS_PROVIDER, cprovider);
+                httpContext.setAttribute(HttpClientContext.CREDS_PROVIDER, cprovider);
             }
-        }
+
         headers = Collections.unmodifiableMap(headers);
         frozen = true;
-    }
-
-    /**
-     * Get a connection manager to use for this connection.
-     * <p>
-     * Called late in initialization.
-     * <p>
-     * Default implementation uses a shared PoolingClientConnectionManager.
-     * 
-     * @return The connection manager to use.
-     */
-    private ClientConnectionManager getConnectionManager() {
-        synchronized (this.getClass()) {
-            if (sharedCM == null) {
-                PoolingClientConnectionManager cm = new PoolingClientConnectionManager();
-                cm.setMaxTotal(maxConnections);
-                cm.setDefaultMaxPerRoute(maxConnections);
-                sharedCM = cm;
-            }
-            return sharedCM;
-        }
     }
 
     /**
