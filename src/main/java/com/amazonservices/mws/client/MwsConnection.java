@@ -37,7 +37,6 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -244,19 +243,32 @@ public class MwsConnection implements Cloneable, Closeable {
         HttpConnectionParams.setStaleCheckingEnabled(httpParams, true);
         HttpConnectionParams.setTcpNoDelay(httpParams, true);
 
-        String scheme = MwsUtl.usesHttps(endpoint) ? "https" : "http";
-        httpClient = HttpClientBuilder.create()
-                .setUserAgent(userAgent)
-                .setProxy(new HttpHost(proxyHost, proxyPort, scheme))
-                .build();
         httpContext = new BasicHttpContext();
 
+        if (proxyHost != null && proxyPort != 0) {
+            String scheme = MwsUtl.usesHttps(endpoint) ? "https" : "http";
+            HttpHost hostConfiguration = new HttpHost(proxyHost, proxyPort, scheme);
 
-        if (proxyUsername != null && proxyPassword != null) {
-            Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
-            CredentialsProvider cprovider = new BasicCredentialsProvider();
-            cprovider.setCredentials(new AuthScope(proxyHost, proxyPort), credentials);
-            httpContext.setAttribute(HttpClientContext.CREDS_PROVIDER, cprovider);
+            if (proxyUsername != null && proxyPassword != null) {
+                Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
+                CredentialsProvider cprovider = new BasicCredentialsProvider();
+                cprovider.setCredentials(new AuthScope(proxyHost, proxyPort), credentials);
+
+                httpClient = HttpClientBuilder.create()
+                        .setUserAgent(userAgent)
+                        .setProxy(hostConfiguration)
+                        .setDefaultCredentialsProvider(cprovider)
+                        .build();
+            } else {
+                httpClient = HttpClientBuilder.create()
+                        .setUserAgent(userAgent)
+                        .setProxy(hostConfiguration)
+                        .build();
+            }
+        } else {
+            httpClient = HttpClientBuilder.create()
+                    .setUserAgent(userAgent)
+                    .build();
         }
 
         headers = Collections.unmodifiableMap(headers);
