@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -250,18 +251,20 @@ public class MwsConnection implements Cloneable, Closeable {
         HttpConnectionParams.setStaleCheckingEnabled(httpParams, true);
         HttpConnectionParams.setTcpNoDelay(httpParams, true);
 
-
+        String scheme = MwsUtl.usesHttps(endpoint) ? "https" : "http";
         httpClient = HttpClientBuilder.create()
                 .setUserAgent(userAgent)
+                .setProxy(new HttpHost(proxyHost, proxyPort, scheme))
                 .build();
         httpContext = new BasicHttpContext();
 
-            if (proxyUsername != null && proxyPassword != null) {
-                Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
-                CredentialsProvider cprovider = new BasicCredentialsProvider();
-                cprovider.setCredentials(new AuthScope(proxyHost, proxyPort), credentials);
-                httpContext.setAttribute(HttpClientContext.CREDS_PROVIDER, cprovider);
-            }
+
+        if (proxyUsername != null && proxyPassword != null) {
+            Credentials credentials = new UsernamePasswordCredentials(proxyUsername, proxyPassword);
+            CredentialsProvider cprovider = new BasicCredentialsProvider();
+            cprovider.setCredentials(new AuthScope(proxyHost, proxyPort), credentials);
+            httpContext.setAttribute(HttpClientContext.CREDS_PROVIDER, cprovider);
+        }
 
         headers = Collections.unmodifiableMap(headers);
         frozen = true;
