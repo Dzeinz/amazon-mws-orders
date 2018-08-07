@@ -37,14 +37,10 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
@@ -109,9 +105,6 @@ public class MwsConnection implements Cloneable, Closeable {
 
     /** Commons logging. */
     private static final Log log = LogFactory.getLog(MwsConnection.class);
-
-    /** The global shared connection manager (lazy created). */
-    private static ClientConnectionManager sharedCM;
 
     /** The global shared executor service (lazy created). */
     private static ExecutorService sharedES;
