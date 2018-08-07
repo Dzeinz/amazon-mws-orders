@@ -40,9 +40,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
@@ -235,13 +232,6 @@ public class MwsConnection implements Cloneable, Closeable {
             log.debug(buf);
         }
 
-        BasicHttpParams httpParams = new BasicHttpParams();
-        httpParams.setParameter(CoreProtocolPNames.USER_AGENT, userAgent);
-        HttpConnectionParams
-                .setConnectionTimeout(httpParams, connectionTimeout);
-        HttpConnectionParams.setSoTimeout(httpParams, socketTimeout);
-        HttpConnectionParams.setStaleCheckingEnabled(httpParams, true);
-        HttpConnectionParams.setTcpNoDelay(httpParams, true);
 
         httpContext = new BasicHttpContext();
 
